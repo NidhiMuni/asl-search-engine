@@ -1,8 +1,13 @@
 import Inputs from './Inputs'
-
+import './index.css'; 
 
 function App(){
-  return <div> <Inputs /> </div>;
+  return (
+  <div> 
+    <h2> ASL to English Translator</h2>
+    <Inputs /> 
+  </div>
+  );
 }
 
 export default App;
