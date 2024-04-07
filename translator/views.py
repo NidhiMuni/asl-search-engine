@@ -36,7 +36,20 @@ class ResultsView(generic.DetailView):
     model = Question
     template_name = "translator/results.html"
 
+def vote(request):
+    try:
+        selected_choices = request.POST.getlist('selectedChoices[]')
 
+        for choice_id in selected_choices:
+            choice = get_object_or_404(Choice, pk=choice_id)
+            choice.votes += 1
+            choice.save()
+
+        return HttpResponse("Votes submitted successfully")
+    except Exception as e:
+        return HttpResponseRedirect("Error submitting votes: " + str(e))
+
+"""
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -59,7 +72,7 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse("translator:results", args=(question.id,)))
-
+"""
 
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets
