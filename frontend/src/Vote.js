@@ -27,36 +27,58 @@ function Vote() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const selectedChoiceIds = Object.keys(selectedChoices).filter(choiceId => selectedChoices[choiceId]);
-    const questionId = e.target.getAttribute('data-question-id');
-  
-    axios.post(`http://127.0.0.1:8000/${questionId}/vote/`, { choice: selectedChoiceIds })
+    const formData = {
+      questions: {}
+    };
+
+    questions.forEach(question => {
+      formData.questions[question.id] = choices
+        .filter(choice => choice.question.id === question.id && selectedChoiceIds.includes(choice.id.toString()))
+        .map(choice => choice.id);
+    });
+
+    axios.post('http://127.0.0.1:8000/vote/', formData )
       .then(response => {
-        console.log('Vote submitted successfully', selectedChoiceIds);
-        // Fetch updated data from the backend after the vote is submitted
-        axios.get('http://127.0.0.1:8000/getData/')
-          .then(response => {
-            setQuestions(response.data.question);
-            setChoices(response.data.choice);
-          })
-          .catch(error => {
-            console.log('Error fetching updated data:', error);
-          });
+        if (response.data.success) {
+          console.log('Vote submitted successfully', selectedChoiceIds);
+          // Fetch updated data from the backend after the vote is submitted
+          axios.get('http://127.0.0.1:8000/getData/')
+            .then(response => {
+              setQuestions(response.data.question);
+              setChoices(response.data.choice);
+            })
+            .catch(error => {
+              console.log('Error fetching updated data:', error);
+            });
+        } else {
+          console.log('Vote submission failed:', response.data.message);
+        }
       })
       .catch(error => {
         console.log('Error submitting vote:', error);
       });
+
   };
+
   
+  useEffect(() => {
+    const voteForm = document.getElementById('voteForm');
+    voteForm.addEventListener('submit', handleSubmit);
+
+    // Clean up event listener on component unmount
+    return () => {
+      voteForm.removeEventListener('submit', handleSubmit);
+    };
+  }, [handleSubmit]);
 
   return (
     <div>
       <h1>Poll Questions</h1>
-      {questions.map(question => (
-        <div key={question.id}>
-          <h2>{question.question_text}</h2>
-          <form onSubmit={handleSubmit} data-question-id={question.id} method="POST"> {/* Use POST method */}
- {/* Add data-question-id attribute */}
-            <ul>
+      <form onSubmit={handleSubmit} method="POST" id="voteForm">
+        {questions.map(question => (
+          <div key={question.id}>
+            <h2>{question.question_text}</h2>
+            <ul style={{ listStyleType: "none" }}>
               {choices && choices
                 .filter(choice => choice.question.id === question.id)
                 .map(choice => (
@@ -74,10 +96,10 @@ function Vote() {
                   </li>
                 ))}
             </ul>
-            <button type="submit">Submit</button>
-          </form>
-        </div>
-      ))}
+          </div>
+        ))}
+        <button type="submit">Submit</button>
+      </form>
     </div>
   );
 }

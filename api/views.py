@@ -19,13 +19,32 @@ def getData(request):
     choiceSerializer = ChoiceSerializer(choices, many = True)
     return Response({'question': questionSerializer.data, 'choice': choiceSerializer.data})
 
+from django.http import JsonResponse
+
 @api_view(['POST'])
-def vote(request, question_id):
-    print(question_id)
-    question = get_object_or_404(Question, pk=question_id)
-    selected_choice_ids = request.data.get('choice', [])
-    print(selected_choice_ids)
-    selected_choices = question.choice_set.filter(pk__in=selected_choice_ids)
-    print(selected_choices)
-    selected_choices.update(votes=F('votes') + 1)
-    return HttpResponseRedirect(reverse("translator:results", args=(question.id,)))
+def vote(request):
+    try:
+        print("hello")
+        question_ids_and_choices = request.data.get('questions', {})
+        for question_id, selected_choice_ids in question_ids_and_choices.items():
+            question = get_object_or_404(Question, pk=question_id)
+            for choice_id in selected_choice_ids:
+                choice = get_object_or_404(Choice, pk=choice_id)
+                choice.votes += 1
+                choice.save()
+        return JsonResponse({"success": True, "message": "Votes updated successfully"})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": "Failed to update votes", "error": str(e), "req":request})
+
+
+    '''return JsonResponse()
+    print("voting")
+    question_ids_and_choices = request.data.get('questions', {})
+    for question_id, selected_choice_ids in question_ids_and_choices.items():
+        question = get_object_or_404(Question, pk=question_id)
+        for choice_id in selected_choice_ids:
+            choice = get_object_or_404(Choice, pk=choice_id)
+            choice.votes += 1
+            choice.save()
+    return JsonResponse({"message": "Votes updated suck"})'''
+
