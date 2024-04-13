@@ -5,6 +5,7 @@ function Vote() {
   const [questions, setQuestions] = useState([]);
   const [choices, setChoices] = useState([]);
   const [selectedChoices, setSelectedChoices] = useState({});
+  const [mostVoted, setMostVoted] = useState('');
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/getData/')
@@ -28,36 +29,36 @@ function Vote() {
     e.preventDefault();
     const selectedChoiceIds = Object.keys(selectedChoices).filter(choiceId => selectedChoices[choiceId]);
     const formData = {
-      questions: {}
+        questions: {}
     };
 
     questions.forEach(question => {
-      formData.questions[question.id] = choices
-        .filter(choice => choice.question.id === question.id && selectedChoiceIds.includes(choice.id.toString()))
-        .map(choice => choice.id);
+        formData.questions[question.id] = choices
+            .filter(choice => choice.question.id === question.id && selectedChoiceIds.includes(choice.id.toString()))
+            .map(choice => choice.id);
     });
 
-    axios.post('http://127.0.0.1:8000/vote/', formData )
-      .then(response => {
-        if (response.data.success) {
-          console.log('Vote submitted successfully', selectedChoiceIds);
-          // Fetch updated data from the backend after the vote is submitted
-          axios.get('http://127.0.0.1:8000/getData/')
-            .then(response => {
-              setQuestions(response.data.question);
-              setChoices(response.data.choice);
-            })
-            .catch(error => {
-              console.log('Error fetching updated data:', error);
-            });
-        } else {
-          console.log('Vote submission failed:', response.data.message);
-        }
-      })
-      .catch(error => {
-        console.log('Error submitting vote:', error);
-      });
-
+    axios.post('http://127.0.0.1:8000/vote/', formData)
+        .then(response => {
+            if (response.data.success) {
+                console.log('Vote submitted successfully', selectedChoiceIds);
+                setMostVoted(response.data.most_voted);
+                
+                axios.get('http://127.0.0.1:8000/getData/')
+                    .then(response => {
+                        setQuestions(response.data.question);
+                        setChoices(response.data.choice);
+                    })
+                    .catch(error => {
+                        console.log('Error fetching updated data:', error);
+                    });
+            } else {
+                console.log('Vote submission failed:', response.data.message);
+            }
+        })
+        .catch(error => {
+            console.log('Error submitting vote:', error);
+        });
   };
 
   
@@ -65,7 +66,6 @@ function Vote() {
     const voteForm = document.getElementById('voteForm');
     voteForm.addEventListener('submit', handleSubmit);
 
-    // Clean up event listener on component unmount
     return () => {
       voteForm.removeEventListener('submit', handleSubmit);
     };
@@ -73,7 +73,7 @@ function Vote() {
 
   return (
     <div>
-      <h1>Poll Questions</h1>
+      <h1>Translator</h1>
       <form onSubmit={handleSubmit} method="POST" id="voteForm">
         {questions.map(question => (
           <div key={question.id}>
@@ -100,8 +100,19 @@ function Vote() {
         ))}
         <button type="submit">Submit</button>
       </form>
+      <div style={{ marginTop: '20px' }}>
+        <label htmlFor="mostVotedChoice">Most Voted Choice:</label>
+        <input 
+          type="text" 
+          id="mostVotedChoice" 
+          value={mostVoted} 
+          readOnly
+          style={{ marginLeft: '10px' }}
+        />
+      </div>
     </div>
   );
+
 }
 
 export default Vote;
