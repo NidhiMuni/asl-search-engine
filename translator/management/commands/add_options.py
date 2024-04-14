@@ -24,7 +24,7 @@ class Command(BaseCommand):
     {"question": "Repeated_Movement", "choices": ["False", "True"]},
     {"question": "Second_Minor_Location", "choices": ["other", "forearm back", "waist", "neutral", "torso mid", "torso top", "forearm radial", "hand away", "head top", "finger back", "head away", "palm back", "neck", "under chin", "other away", "clavicle", "cheek nose", "finger tip", "palm", "mouth", "heel", "hips", "upper lip", "torso bottom", "chin", "finger radial", "shoulder", "elbow back", "upper arm", "eye", "body away", "arm away", "forehead", "finger front", "forearm ulnar", "finger ulnar", "forearm front"]},
     {"question": "Selected_Fingers", "choices": ["r", "m", "mrp", "imp", "im", "imrp", "p", "imr", "i", "t", "ip", "mr"]},
-    {"question": "Sign_Duration", "choices": ["400", "2600", "2000", "1800", "1700", "1100", "700", "200", "600", "1600", "300", "1300", "2400", "1200", "900", "500", "1400", "1000", "2300", "2100", "2200", "1500", "800", "1900"]},
+    {"question": "Sign_Duration", "choices": ["200", "300", "400", "500", "600", "700", "800", "900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300", "2400", "2600"]},
     {"question": "Sign_Type", "choices": ["symmetry violation", "symmetrical or alternating", "one handed", "dominance violation", "asymmetrical different handshape", "asymmetrical same handshape"]},
     {"question": "Spread", "choices": ["False", "True"]},
     {"question": "Spread_Change", "choices": ["False", "True"]},

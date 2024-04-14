@@ -24,6 +24,7 @@ from rest_framework.decorators import api_view
 from translator.models import Question, Choice
 
 import pandas as pd
+import numpy as np
 
 @api_view(['POST'])
 def vote(request):
@@ -40,15 +41,52 @@ def vote(request):
                 choice.save()
                 selected_results.append({'selected_relation': question, 'selected_object': choice})
                 
-        print(selected_results)
 
-        most_voted_choice = Choice.objects.order_by('-votes').first()
-        most_voted_text = most_voted_choice.choice_text if most_voted_choice else "No votes yet"
+        edges = pd.read_csv('minimal-model/filteredEdges.csv')
+        # print(selected_results)
+
+        predicted_subject = "hi"
+        
+        setOfSigns = pd.DataFrame()
+        toConcat = []
+        
+        
+        for i, row in enumerate(selected_results):
+            thisRelation = row['selected_relation']
+            thisObject = row['selected_object']
+            signsWithThose = edges[edges['relation'] == thisRelation][edges['object'] == thisObject]
+            toConcat.append(signsWithThose)
+
+        if not toConcat or all(df.empty for df in toConcat):
+            return JsonResponse({
+                "success": True,
+                "message": "no matches",
+                "most_voted": "no matches"
+            })
+        
+        
+        setOfSigns = pd.concat(toConcat, ignore_index=True)
+
+        counts = setOfSigns['subject'].value_counts()
+        setOfSigns['repeat_count'] = setOfSigns['subject'].map(counts)
+        
+        setOfSigns['match_proportion'] = setOfSigns['repeat_count'] / setOfSigns['subject_count']
+        
+        max_index = np.argmax(setOfSigns['match_proportion'].values)
+
+        
+        highest_ratio_row = setOfSigns.loc[max_index]
+        predicted_subject = highest_ratio_row['subject']
+        
+
+        #most_voted_choice = Choice.objects.order_by('-votes').first()
+        #most_voted_text = most_voted_choice.choice_text if most_voted_choice else "No votes yet"
+
 
         return JsonResponse({
             "success": True,
             "message": "Votes updated successfully",
-            "most_voted": most_voted_text
+            "most_voted": predicted_subject
         })
     except Exception as e:
         return JsonResponse({
