@@ -25,13 +25,12 @@ class Command(BaseCommand):
     {"question": "Second_Minor_Location", "choices": ["other", "forearm back", "waist", "neutral", "torso mid", "torso top", "forearm radial", "hand away", "head top", "finger back", "head away", "palm back", "neck", "under chin", "other away", "clavicle", "cheek nose", "finger tip", "palm", "mouth", "heel", "hips", "upper lip", "torso bottom", "chin", "finger radial", "shoulder", "elbow back", "upper arm", "eye", "body away", "arm away", "forehead", "finger front", "forearm ulnar", "finger ulnar", "forearm front"]},
     {"question": "Selected_Fingers", "choices": ["r", "m", "mrp", "imp", "im", "imrp", "p", "imr", "i", "t", "ip", "mr"]},
     {"question": "Sign_Duration", "choices": ["200", "300", "400", "500", "600", "700", "800", "900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300", "2400", "2600"]},
-    {"question": "Sign_Type", "choices": ["symmetry violation", "symmetrical or alternating", "one handed", "dominance violation", "asymmetrical different handshape", "asymmetrical same handshape"]},
+    {"question": "Sign_Type", "choices": ["symmetry violation", "symmetrical or alternating", "one handed", "dominance violation", "asymmetrical different handshape", "asymmetrical same handshape", "classifiers", "lexical signs", "fingerspelled signs", "loan signs", "gestures", "number signs", "compound signs"]},
     {"question": "Spread", "choices": ["False", "True"]},
     {"question": "Spread_Change", "choices": ["False", "True"]},
     {"question": "Thumb_Contact", "choices": ["False", "True"]},
     {"question": "Thumb_Position", "choices": ["open", "closed"]},
     {"question": "Wrist_Twist", "choices": ["False", "True"]},
-    {"question": "sign_type", "choices": ["classifiers", "lexical signs", "fingerspelled signs", "loan signs", "gestures", "number signs", "compound signs"]}
 ]
 
 

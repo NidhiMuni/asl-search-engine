@@ -12,6 +12,7 @@ from django.utils import timezone
 from rest_framework import status
 
 import pandas as pd
+import numpy as np
 
 @api_view(['GET'])
 def getData(request):
@@ -25,10 +26,11 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from translator.models import Question, Choice
 
+
 @api_view(['POST'])
 def vote(request):
     try:
-        selected_results = {}
+        selected_results = []
 
         question_ids_and_choices = request.data.get('questions', {})
         for question_id, selected_choice_ids in question_ids_and_choices.items():
@@ -38,17 +40,43 @@ def vote(request):
                 print(question, choice)
                 choice.votes += 1
                 choice.save()
+                selected_results.append({'selected_relation': question, 'selected_object': choice})
 
         print(selected_results)
 
+        # read in data
+        edges = pd.read_csv('minimal-model/filteredEdges.csv')
+
+        print("baby")
+
+        # setOfSigns = pd.DataFrame()
+        toConcat = []
+
+        for i, row in enumerate(selected_results):
+            thisRelation = row['selected_relation']
+            thisObject = row['selected_object']
+            signsWithThose = edges[edges['relation'] == str(thisRelation)][edges['object'] == str(thisObject)]
+            toConcat.append(signsWithThose)
+
+        setOfSigns = pd.concat(toConcat, ignore_index=True)
+
+        counts = setOfSigns['subject'].value_counts()
+        setOfSigns['repeat_count'] = setOfSigns['subject'].map(counts)
+        setOfSigns['match_proportion'] = setOfSigns['repeat_count'] / setOfSigns['subject_count']
+
+        max_index = np.argmax(setOfSigns['match_proportion'].values)
+        highest_ratio_row = setOfSigns.loc[max_index]
+        predicted_subject = highest_ratio_row['subject']
+        print(predicted_subject)
+
         # Calculate the most voted choice overall
-        most_voted_choice = Choice.objects.order_by('-votes').first()
-        most_voted_text = most_voted_choice.choice_text if most_voted_choice else "No votes yet"
+        #most_voted_choice = Choice.objects.order_by('-votes').first()
+        #most_voted_text = most_voted_choice.choice_text if most_voted_choice else "No votes yet"
 
         return JsonResponse({
             "success": True,
-            "message": "Votes updated successfully",
-            "most_voted": most_voted_text
+            "message": "Match found",
+            "most_voted": predicted_subject
         })
     except Exception as e:
         return JsonResponse({
