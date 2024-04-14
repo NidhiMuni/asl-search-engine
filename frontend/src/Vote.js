@@ -1,6 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+function DropdownCheckbox({ question, choices, handleCheckboxChange, selectedChoices }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div>
+      <h2 onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer', marginBottom: isOpen ? '0' : '1rem' }}>
+        {question.question_text}
+      </h2>
+      {isOpen && (
+        <ul style={{ listStyleType: "none", padding: '10px', background: "white", border: "1px solid #ccc", borderRadius: '5px', marginBottom: '1rem' }}>
+          {choices.map(choice => (
+            <li key={choice.id}>
+              <input
+                type="checkbox"
+                id={`choice-${choice.id}`}
+                name={`choice-${choice.id}`}
+                value={choice.id}
+                onChange={(e) => handleCheckboxChange(e, choice.id)}
+                checked={selectedChoices[choice.id] || false}
+              />
+              <label htmlFor={`choice-${choice.id}`}>
+                {choice.choice_text} - Votes: {choice.votes}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function Vote() {
   const [questions, setQuestions] = useState([]);
   const [choices, setChoices] = useState([]);
@@ -61,50 +92,26 @@ function Vote() {
         });
   };
 
-  
-  useEffect(() => {
-    const voteForm = document.getElementById('voteForm');
-    voteForm.addEventListener('submit', handleSubmit);
-
-    return () => {
-      voteForm.removeEventListener('submit', handleSubmit);
-    };
-  }, [handleSubmit]);
-
   return (
     <div>
       <h1>Translator</h1>
       <form onSubmit={handleSubmit} method="POST" id="voteForm">
         {questions.map(question => (
-          <div key={question.id}>
-            <h2>{question.question_text}</h2>
-            <ul style={{ listStyleType: "none" }}>
-              {choices && choices
-                .filter(choice => choice.question.id === question.id)
-                .map(choice => (
-                  <li key={choice.id}>
-                    <input
-                      type="checkbox"
-                      id={`choice-${choice.id}`}
-                      name={`choice-${choice.id}`}
-                      value={choice.id}
-                      onChange={(e) => handleCheckboxChange(e, choice.id)}
-                    />
-                    <label htmlFor={`choice-${choice.id}`}>
-                      {choice.choice_text} - Votes: {choice.votes}
-                    </label>
-                  </li>
-                ))}
-            </ul>
-          </div>
+          <DropdownCheckbox
+            key={question.id}
+            question={question}
+            choices={choices.filter(choice => choice.question.id === question.id)}
+            handleCheckboxChange={handleCheckboxChange}
+            selectedChoices={selectedChoices}
+          />
         ))}
         <button type="submit">Submit</button>
       </form>
       <div style={{ marginTop: '20px' }}>
-        <label htmlFor="mostVotedChoice">Most Voted Choice:</label>
+        <label htmlFor="Match">Most Voted Choice:</label>
         <input 
           type="text" 
-          id="mostVotedChoice" 
+          id="match" 
           value={mostVoted} 
           readOnly
           style={{ marginLeft: '10px' }}
@@ -112,7 +119,6 @@ function Vote() {
       </div>
     </div>
   );
-
 }
 
 export default Vote;
