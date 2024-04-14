@@ -22,7 +22,7 @@ function DropdownCheckbox({ question, choices, handleCheckboxChange, selectedCho
                 checked={selectedChoices[choice.id] || false}
               />
               <label htmlFor={`choice-${choice.id}`}>
-                {choice.choice_text} - Votes: {choice.votes}
+                {choice.choice_text}
               </label>
             </li>
           ))}
@@ -32,11 +32,14 @@ function DropdownCheckbox({ question, choices, handleCheckboxChange, selectedCho
   );
 }
 
+
 function Vote() {
   const [questions, setQuestions] = useState([]);
   const [choices, setChoices] = useState([]);
   const [selectedChoices, setSelectedChoices] = useState({});
   const [mostVoted, setMostVoted] = useState('');
+  const [matchConfidence, setMatchConfidence] = useState('');
+
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/getData/')
@@ -74,6 +77,7 @@ function Vote() {
             if (response.data.success) {
                 console.log('Vote submitted successfully', selectedChoiceIds);
                 setMostVoted(response.data.most_voted);
+                setMatchConfidence(response.data.match_confidence);
                 
                 axios.get('http://127.0.0.1:8000/getData/')
                     .then(response => {
@@ -108,11 +112,12 @@ function Vote() {
         <button type="submit">Submit</button>
       </form>
       <div style={{ marginTop: '20px' }}>
-        <label htmlFor="Match">Most Voted Choice:</label>
+        <label htmlFor="Match">Match: </label>
         <input 
           type="text" 
           id="match" 
-          value={mostVoted} 
+          //value = {mostVoted}
+          value={`${mostVoted} ${Math.round(matchConfidence * 100)}% match`}
           readOnly
           style={{ marginLeft: '10px' }}
         />

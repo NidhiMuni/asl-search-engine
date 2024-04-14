@@ -47,16 +47,22 @@ def vote(request):
         # read in data
         edges = pd.read_csv('minimal-model/filteredEdges.csv')
 
-        print("baby")
-
-        # setOfSigns = pd.DataFrame()
         toConcat = []
 
+        # get all rows with desired data
         for i, row in enumerate(selected_results):
             thisRelation = row['selected_relation']
             thisObject = row['selected_object']
             signsWithThose = edges[edges['relation'] == str(thisRelation)][edges['object'] == str(thisObject)]
             toConcat.append(signsWithThose)
+
+        if not toConcat or all(df.empty for df in toConcat):
+            return JsonResponse({
+                "success": True,
+                "message": "no matches",
+                "most_voted": "no matches"
+                #"match_confidence": 0
+            })
 
         setOfSigns = pd.concat(toConcat, ignore_index=True)
 
@@ -67,16 +73,13 @@ def vote(request):
         max_index = np.argmax(setOfSigns['match_proportion'].values)
         highest_ratio_row = setOfSigns.loc[max_index]
         predicted_subject = highest_ratio_row['subject']
-        print(predicted_subject)
-
-        # Calculate the most voted choice overall
-        #most_voted_choice = Choice.objects.order_by('-votes').first()
-        #most_voted_text = most_voted_choice.choice_text if most_voted_choice else "No votes yet"
+        confidence = highest_ratio_row['match_proportion']
 
         return JsonResponse({
             "success": True,
             "message": "Match found",
-            "most_voted": predicted_subject
+            "most_voted": predicted_subject,
+            "match_confidence": confidence
         })
     except Exception as e:
         return JsonResponse({
