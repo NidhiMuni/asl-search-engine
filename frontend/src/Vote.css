@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;700&display=swap');
+/* General styling for the body and app container */
+body {
+    background-color: #FAF9F6; /* Custom light background color for the entire app */
+    margin: 0; /* Remove default margin */
+    font-family: 'Libre Franklin', sans-serif; /* Set the font for the entire app */
+    font-weight: 400; /* Ensure no text is bold */
+  }
+  
+  /* Flex container to hold the columns */
+  .container {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh; /* Set the container height to fill the viewport */
+    align-items: stretch; /* Stretch children to fill the container height */
+    box-sizing: border-box; /* Include padding and borders in the element's total width and height */
+  }
+  
+  /* Individual columns for checkboxes and results */
+  .column {
+    flex: 1; /* Each column takes equal width */
+    padding: 20px; /* Add some padding around the content */
+    overflow-y: auto; /* Allows scrolling within each column if content overflows */
+    box-sizing: border-box; /* Include padding in the width calculation */
+  }
+  
+  /* Styling for headers to ensure they are not bold */
+  h1, h2 {
+    font-weight: 400; /* Ensure no bold text for all headers */
+  }
+  
+  /* Fixed header styling */
+  h1 {
+    text-align: center;
+    position: fixed; /* Fix position at the top */
+    width: 100%; /* Full width */
+    background-color: #FAF9F6; /* Maintain the background consistency */
+    padding: 10px 0; /* Padding on top and bottom */
+    margin-top: 0; /* No margin on top */
+    z-index: 1000; /* Ensure it's above other content */
+  }
+  
+  /* Smaller font size for checkbox titles */
+  h2 {
+    font-size: 20px; /* Smaller font size specifically for checkbox titles */
+  }
+  
+  /* Left-aligned text for dropdown checkboxes */
+  .dropdown-column {
+    flex: 3;
+    text-align: left;
+  }
+  
+  /* Result column styling */
+  .result-column {
+    flex: 2;
+    display: flex;
+    flex-direction: column; /* Organize children in a column */
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+  }
+  
+  .submit-button {
+    padding: 10px 20px;
+    background-color: #FAF9F6; /* Background color same as the app */
+    color: black; /* Text color */
+    border: 2px solid black; /* Black border */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Libre Franklin', sans-serif;
+    margin-top: 20px; /* Extra space above the button */
+    margin-bottom: 20px; /* Spacing between the button and the match box */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .submit-button:hover {
+    background-color: #E3E2DF; /* A couple shades darker than #FAF9F6 for hover */
+  }
+  
+  
+  /* Text input styling */
+  input[type="text"] {
+    font-size: 1.5rem;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  /* Form padding to account for fixed header */
+  form {
+    padding-top: 60px;
+  }
+  

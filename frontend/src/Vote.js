@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './Vote.css'; // Assuming the styles are saved in Vote.css
 
 function DropdownCheckbox({ question, choices, handleCheckboxChange, selectedChoices }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +40,6 @@ function Vote() {
   const [selectedChoices, setSelectedChoices] = useState({});
   const [mostVoted, setMostVoted] = useState('');
   const [matchConfidence, setMatchConfidence] = useState('');
-
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/getData/')
@@ -99,28 +99,33 @@ function Vote() {
   return (
     <div>
       <h1>Translator</h1>
-      <form onSubmit={handleSubmit} method="POST" id="voteForm">
-        {questions.map(question => (
-          <DropdownCheckbox
-            key={question.id}
-            question={question}
-            choices={choices.filter(choice => choice.question.id === question.id)}
-            handleCheckboxChange={handleCheckboxChange}
-            selectedChoices={selectedChoices}
-          />
-        ))}
-        <button type="submit">Submit</button>
-      </form>
-      <div style={{ marginTop: '20px' }}>
-        <label htmlFor="Match">Match: </label>
-        <input 
-          type="text" 
-          id="match" 
-          //value = {mostVoted}
-          value={`${mostVoted} ${Math.round(matchConfidence * 100)}% match`}
-          readOnly
-          style={{ marginLeft: '10px' }}
-        />
+      <div className="container">
+        <div className="column dropdown-column">
+          <form onSubmit={handleSubmit} method="POST" id="voteForm">
+            {questions.map(question => (
+              <DropdownCheckbox
+                key={question.id}
+                question={question}
+                choices={choices.filter(choice => choice.question.id === question.id)}
+                handleCheckboxChange={handleCheckboxChange}
+                selectedChoices={selectedChoices}
+              />
+            ))}
+          </form>
+        </div>
+        <div className="column result-column">
+          {/* Button moved above the match input box */}
+          <button type="submit" form="voteForm" className="submit-button">Find match</button>
+          <div style={{ width: '100%' }}>
+            <label htmlFor="Match" style={{ display: 'block', marginBottom: '10px' }}>Match:</label>
+            <input 
+              type="text" 
+              id="match" 
+              value={`${mostVoted} ${Math.round(matchConfidence * 100)}% match`}
+              readOnly
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
