@@ -98,7 +98,7 @@ function Vote() {
 
   return (
     <div>
-      <h1>Translator</h1>
+      <h1>ASL Search Engine</h1>
       <div className="container">
         <div className="column dropdown-column">
           <form onSubmit={handleSubmit} method="POST" id="voteForm">
